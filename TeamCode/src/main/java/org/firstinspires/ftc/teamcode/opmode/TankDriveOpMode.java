@@ -29,16 +29,17 @@
 
 package org.firstinspires.ftc.teamcode.opmode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.hardware.Launcher;
+import org.firstinspires.ftc.teamcode.hardware.CandyFeeder;
+import org.firstinspires.ftc.teamcode.hardware.CandyLauncher;
 
 
 /**
@@ -61,11 +62,13 @@ public class TankDriveOpMode extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
-    private Launcher launcher = null;
+    private CandyLauncher candyLauncher = null;
     private DcMotor armMotor =null;
     private Servo triggerServo = null;
     private DigitalChannel lowerArmTouchSensor = null;
     private DigitalChannel upperArmTouchSensor = null;
+    private CandyFeeder candyFeeder = null;
+    private CRServo candyFeederServo = null;
 
     @Override
     public void runOpMode() {
@@ -78,11 +81,13 @@ public class TankDriveOpMode extends LinearOpMode {
         rightDrive.setDirection(DcMotor.Direction.REVERSE);
 
         armMotor = hardwareMap.get(DcMotor.class, "arm_motor");
-        triggerServo = null;
+        triggerServo = hardwareMap.get(Servo.class, "trigger_servo");
         lowerArmTouchSensor = hardwareMap.get(DigitalChannel.class, "lower_touch");
         upperArmTouchSensor = hardwareMap.get(DigitalChannel.class, "upper_touch");
+        candyLauncher = new CandyLauncher(armMotor, triggerServo, lowerArmTouchSensor, upperArmTouchSensor);
 
-        launcher = new Launcher(armMotor, triggerServo, lowerArmTouchSensor, upperArmTouchSensor);
+        candyFeederServo = hardwareMap.get(CRServo.class, "feeder_servo");
+        candyFeeder = new CandyFeeder(candyFeederServo);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -114,15 +119,26 @@ public class TankDriveOpMode extends LinearOpMode {
             leftDrive.setPower(leftPower);
             rightDrive.setPower(rightPower);
 
-            if(gamepad1.x) {
-                launcher.resetPosition();
+            if (gamepad1.a) {
+                candyLauncher.launch();
+            }
+
+            if (gamepad1.b) {
+                candyLauncher.resetPosition();
+            }
+
+            if (gamepad1.x) {
+                candyFeeder.on();
+            }
+            else{
+                candyFeeder.off();
             }
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
             String touchSensorState = "lower: " + lowerArmTouchSensor.getState() + ", upper: " + upperArmTouchSensor.getState();
-            telemetry.addData("Touch Sensors v2", touchSensorState);
+            telemetry.addData("Touch Sensors ", touchSensorState);
             telemetry.update();
         }
     }
