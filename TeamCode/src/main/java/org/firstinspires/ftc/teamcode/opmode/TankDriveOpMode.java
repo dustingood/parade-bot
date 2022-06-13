@@ -69,6 +69,7 @@ public class TankDriveOpMode extends LinearOpMode {
     private DigitalChannel upperArmTouchSensor = null;
     private CandyFeeder candyFeeder = null;
     private CRServo candyFeederServo = null;
+    private boolean spoonInPosition = false;
 
     @Override
     public void runOpMode() {
@@ -119,15 +120,17 @@ public class TankDriveOpMode extends LinearOpMode {
             leftDrive.setPower(leftPower);
             rightDrive.setPower(rightPower);
 
-            if (gamepad1.a) {
+            if (gamepad1.right_trigger > 0.25f) {
                 candyLauncher.launch();
+                spoonInPosition = false;
             }
 
             if (gamepad1.b) {
                 candyLauncher.resetPosition();
+                spoonInPosition = true;
             }
 
-            if (gamepad1.x) {
+            if (gamepad1.x && spoonInPosition) {
                 candyFeeder.on();
             }
             else{

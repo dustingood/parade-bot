@@ -11,7 +11,7 @@ public class CandyFeeder {
     }
 
     public void on(){
-        candyFeederServo.setPower(1);
+        candyFeederServo.setPower(-0.5);
     }
 
     public void off(){

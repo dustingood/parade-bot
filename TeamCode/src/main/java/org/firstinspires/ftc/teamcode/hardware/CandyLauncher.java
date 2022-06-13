@@ -6,9 +6,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class CandyLauncher {
 
-    private static final double ARM_POWER = 1.0;
+    private static final double ARM_POWER = 0.33;
     private static final double SERVO_FIRE_POSITION = 0.44;
-    private static final double SERVO_RESET_POSITION = 0.48;
+    private static final double SERVO_RESET_POSITION = 0.5;
 
     private DcMotor armMotor;
     private Servo triggerServo;
